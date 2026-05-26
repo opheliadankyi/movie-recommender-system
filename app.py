@@ -222,17 +222,33 @@ import urllib3
 import pandas as pd
 
 app = Flask(__name__)
+@app.route("/")
+def home():
+    return "Movie Recommender System is Live!"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 API_KEY = "ca87348ba797784ff19f4e03918d2df4"
 
-# Use current Render/GitHub directory
-path = os.getcwd()
+# Project paths
+path = r'G:\My Drive\AIMS\AML@SCALE\projects\RECOMMENDER-SYSTEM'
+folder = 'files_25m'
 
-# Temporary empty dictionaries for deployment
-map_movies_to_titles = {}
-movie_to_tmdb = {}
+# Load links.csv
+links_df = pd.read_csv(
+    os.path.join(path, 'data', 'ml-25m', 'links.csv')
+)
+
+# Load movie titles
+map_movies_to_titles = H.load_from_pickle(
+    os.path.join(path, folder, 'preprocess'),
+    'map_movies_to_titles'
+)
+
+# Map MovieLens movieId -> TMDB id
+movie_to_tmdb = dict(
+    zip(links_df['movieId'], links_df['tmdbId'])
+)
 
 # Homepage categories
 featured_categories = {
@@ -323,15 +339,33 @@ def home():
 
         movie_name = request.form['movie']
 
-        # TEMPORARY FAKE RECOMMENDATIONS
-        recommended_movies = [
-            "Interstellar",
-            "Inception",
-            "The Matrix",
-            "Avengers",
-            "The Dark Knight",
-            "John Wick"
-        ]
+        # Find selected movie
+        selected_movie_id = None
+
+        for movie_id, title in map_movies_to_titles.items():
+
+            if movie_name.lower() in title.lower():
+
+                selected_movie_id = movie_id
+                break
+
+        # Generate recommendations
+        if selected_movie_id is not None:
+
+            recommended_movies = H.recommend_movies(
+                path,
+                folder,
+                selected_movie_id,
+                5,
+                10,
+                0.01,
+                0.01,
+                0.01
+            )
+            print(recommended_movies)
+            
+            if recommended_movies is None:
+                recommended_movies = []
 
         for title in recommended_movies:
 
