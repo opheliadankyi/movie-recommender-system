@@ -6,9 +6,9 @@ import pandas as pd
 import help_functions as H
 
 app = Flask(__name__)
-@app.route("/")
-def home():
-    return "Movie Recommender System is Live!"
+# @app.route("/")
+# def home():
+#     return "Movie Recommender System is Live!"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
