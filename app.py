@@ -6,30 +6,38 @@ import pandas as pd
 import help_functions as H
 
 app = Flask(__name__)
+@app.route("/")
+def home():
+    return "Movie Recommender System is Live!"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 API_KEY = "ca87348ba797784ff19f4e03918d2df4"
 
 # Project paths
-path = r'G:\My Drive\AIMS\AML@SCALE\projects\RECOMMENDER-SYSTEM'
+# path = r'G:\My Drive\AIMS\AML@SCALE\projects\RECOMMENDER-SYSTEM'
+path = os.getcwd()
 folder = 'files_25m'
 
 # Load links.csv
-links_df = pd.read_csv(
-    os.path.join(path, 'data', 'ml-25m', 'links.csv')
-)
+# links_df = pd.read_csv(
+#     os.path.join(path, 'data', 'ml-25m', 'links.csv')
+# )
 
-# Load movie titles
-map_movies_to_titles = H.load_from_pickle(
-    os.path.join(path, folder, 'preprocess'),
-    'map_movies_to_titles'
-)
+# # Load movie titles
+# map_movies_to_titles = H.load_from_pickle(
+#     os.path.join(path, folder, 'preprocess'),
+#     'map_movies_to_titles'
+# )
 
-# Map MovieLens movieId -> TMDB id
-movie_to_tmdb = dict(
-    zip(links_df['movieId'], links_df['tmdbId'])
-)
+# # Map MovieLens movieId -> TMDB id
+# movie_to_tmdb = dict(
+#     zip(links_df['movieId'], links_df['tmdbId'])
+# )
+
+map_movies_to_titles = {}
+
+movie_to_tmdb = {}
 
 # Homepage categories
 featured_categories = {
@@ -151,16 +159,22 @@ def home():
         # Generate recommendations
         if selected_movie_id is not None:
 
-            recommended_movies = H.recommend_movies(
-                path,
-                folder,
-                selected_movie_id,
-                5,
-                10,
-                0.01,
-                0.01,
-                0.01
-            )
+            # recommended_movies = H.recommend_movies(
+            #     path,
+            #     folder,
+            #     selected_movie_id,
+            #     5,
+            #     10,
+            #     0.01,
+            #     0.01,
+            #     0.01
+            # )
+            recommended_movies = [
+                "Interstellar",
+                "Inception",
+                "The Matrix",
+                "Avengers"
+            ]
             print(recommended_movies)
             
             if recommended_movies is None:
