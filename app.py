@@ -219,36 +219,42 @@ from flask import Flask, render_template, request
 import os
 import requests
 import urllib3
+import help_functions as H
 import pandas as pd
 
 app = Flask(__name__)
-@app.route("/")
-def home():
-    return "Movie Recommender System is Live!"
+# @app.route("/")
+# def home():
+#     return "Movie Recommender System is Live!"
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 API_KEY = "ca87348ba797784ff19f4e03918d2df4"
 
 # Project paths
-path = r'G:\My Drive\AIMS\AML@SCALE\projects\RECOMMENDER-SYSTEM'
+# path = r'G:\My Drive\AIMS\AML@SCALE\projects\RECOMMENDER-SYSTEM'
+path = os.getcwd()
 folder = 'files_25m'
 
 # Load links.csv
-links_df = pd.read_csv(
-    os.path.join(path, 'data', 'ml-25m', 'links.csv')
-)
+# links_df = pd.read_csv(
+#     os.path.join(path, 'data', 'ml-25m', 'links.csv')
+# )
 
-# Load movie titles
-map_movies_to_titles = H.load_from_pickle(
-    os.path.join(path, folder, 'preprocess'),
-    'map_movies_to_titles'
-)
+# # Load movie titles
+# map_movies_to_titles = H.load_from_pickle(
+#     os.path.join(path, folder, 'preprocess'),
+#     'map_movies_to_titles'
+# )
+
+map_movies_to_titles = {}
+
+movie_to_tmdb = {}
 
 # Map MovieLens movieId -> TMDB id
-movie_to_tmdb = dict(
-    zip(links_df['movieId'], links_df['tmdbId'])
-)
+# movie_to_tmdb = dict(
+#     zip(links_df['movieId'], links_df['tmdbId'])
+# )
 
 # Homepage categories
 featured_categories = {
@@ -334,39 +340,129 @@ def home():
 
     # Search recommendations
     movie_name = ''
-
+    recommended_movies = []
     if request.method == 'POST':
 
         movie_name = request.form['movie']
 
-        # Find selected movie
-        selected_movie_id = None
+        # # Find selected movie
+        # selected_movie_id = None
 
-        for movie_id, title in map_movies_to_titles.items():
+        # for movie_id, title in map_movies_to_titles.items():
 
-            if movie_name.lower() in title.lower():
+        #     if movie_name.lower() in title.lower():
 
-                selected_movie_id = movie_id
-                break
+        #         selected_movie_id = movie_id
+        #         break
 
-        # Generate recommendations
-        if selected_movie_id is not None:
+        # # Generate recommendations
+        # if selected_movie_id is not None:
 
-            recommended_movies = H.recommend_movies(
-                path,
-                folder,
-                selected_movie_id,
-                5,
-                10,
-                0.01,
-                0.01,
-                0.01
-            )
-            print(recommended_movies)
+        #     recommended_movies = H.recommend_movies(
+        #         path,
+        #         folder,
+        #         selected_movie_id,
+        #         5,
+        #         10,
+        #         0.01,
+        #         0.01,
+        #         0.01
+        #     )
+        #     print(recommended_movies)
             
-            if recommended_movies is None:
-                recommended_movies = []
+        #     if recommended_movies is None:
+        #         recommended_movies = []
+        
+        # TEMPORARY DEMO RECOMMENDATIONS
+        if "harry" in movie_name.lower():
 
+            recommended_movies = [
+                "Fantastic Beasts",
+                "Lord of the Rings",
+                "The Hobbit",
+                "Percy Jackson"
+            ]
+
+        elif "toy" in movie_name.lower() or "cartoon" in movie_name.lower():
+
+            recommended_movies = [
+                "Finding Nemo",
+                "Cars",
+                "Monsters Inc",
+                "Shrek"
+            ]
+
+        elif "action" in movie_name.lower():
+
+            recommended_movies = [
+                "John Wick",
+                "Mad Max",
+                "Avengers",
+                "The Dark Knight"
+            ]
+
+        elif "romance" in movie_name.lower():
+
+            recommended_movies = [
+                "Titanic",
+                "The Notebook",
+                "La La Land",
+                "Pride and Prejudice"
+            ]
+
+        elif "fiction" in movie_name.lower() or "science" in movie_name.lower():
+
+            recommended_movies = [
+                "Interstellar",
+                "Inception",
+                "The Matrix",
+                "Star Wars"
+            ]
+
+        elif "aladdin" in movie_name.lower():
+
+            recommended_movies = [
+                "Aladdin",
+                "Moana",
+                "Frozen",
+                "Beauty and the Beast"
+            ]
+
+        elif "cinderella" in movie_name.lower():
+
+            recommended_movies = [
+                "Cinderella",
+                "Beauty and the Beast",
+                "Snow White",
+                "Maleficent"
+            ]
+
+        elif "adventure" in movie_name.lower() or "adventurous" in movie_name.lower():
+
+            recommended_movies = [
+                "Jumanji",
+                "Pirates of the Caribbean",
+                "Indiana Jones",
+                "Jurassic Park"
+            ]
+
+        elif "drama" in movie_name.lower() or "real" in movie_name.lower():
+
+            recommended_movies = [
+                "The Pursuit of Happyness",
+                "Forrest Gump",
+                "The Shawshank Redemption",
+                "A Beautiful Mind"
+            ]
+
+        else:
+
+            recommended_movies = [
+                "Interstellar",
+                "Inception",
+                "The Matrix",
+                "Avengers"
+            ]
         for title in recommended_movies:
 
             poster = search_movie_poster(title)
